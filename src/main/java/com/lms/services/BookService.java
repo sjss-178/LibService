@@ -1,17 +1,14 @@
 package com.lms.services;
 
 import com.lms.domain.Book;
-
 import java.util.List;
+import java.util.Optional;
 
 public interface BookService {
-    Book addBook(Book book);
-    Book updateBook(Long id, Book book);
-    Book getBookById(Long id);
     List<Book> getAllBooks();
-    void deleteBook(Long id);
+    void addBook(Book book);
+    Optional<Book> getBookById(Long bookId);
+    void updateBook(Book book);
+    void deleteBook(Long bookId);
     List<Book> getBooksByCategory(Long categoryId);
-    List<Book> getBooksByAuthor(Long authorId);
-    List<Book> searchBooks(String keyword);
 }
-

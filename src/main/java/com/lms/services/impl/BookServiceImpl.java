@@ -6,47 +6,16 @@ import com.lms.repos.BookRepository;
 import com.lms.services.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
+
 @Service
 public class BookServiceImpl implements BookService {
+
     @Autowired
-    BookRepository bookRepository;
-    @Override
-    public Book addBook(Book book) {
-        return bookRepository.save(book);
-    }
-
-    @Override
-    public Book updateBook(Long id, Book bookDetails) {
-        Book existingBook = bookRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Book not found with id: " + id));
-
-        // Update basic fields
-        existingBook.setIsbn(bookDetails.getIsbn());
-        existingBook.setTitle(bookDetails.getTitle());
-        existingBook.setDescription(bookDetails.getDescription());
-        existingBook.setPublicationYear(bookDetails.getPublicationYear());
-        existingBook.setTotalCopies(bookDetails.getTotalCopies());
-        existingBook.setAvailableCopies(bookDetails.getAvailableCopies());
-        existingBook.setShelfLocation(bookDetails.getShelfLocation());
-        existingBook.setActive(bookDetails.getActive());
-
-        // Update relationships (optional depending on your needs)
-        existingBook.setAuthors(bookDetails.getAuthors());
-        existingBook.setCategory(bookDetails.getCategory());
-        existingBook.setPublisher(bookDetails.getPublisher());
-
-        // Save and return updated book
-        return bookRepository.save(existingBook);
-
-    }
-
-    @Override
-    public Book getBookById(Long id) {
-        return bookRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Book not found with id: " + id));
-    }
+    private BookRepository bookRepository;
 
     @Override
     public List<Book> getAllBooks() {
@@ -54,25 +23,36 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public void deleteBook(Long id) {
-        Book existingBook = bookRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Book not found with id: " + id));
-        bookRepository.delete(existingBook);
+    @Transactional
+    public void addBook(Book book) {
+        bookRepository.save(book);
+    }
+
+    @Override
+    public Optional<Book> getBookById(Long bookId) {
+        return bookRepository.findById(bookId);
+    }
+
+    @Override
+    @Transactional
+    public void updateBook(Book book) {
+        if (!bookRepository.existsById(book.getId())) {
+            throw new ResourceNotFoundException("Book not found with id: " + book.getId());
+        }
+        bookRepository.save(book);
+    }
+
+    @Override
+    @Transactional
+    public void deleteBook(Long bookId) {
+        if (!bookRepository.existsById(bookId)) {
+            throw new ResourceNotFoundException("Book not found with id: " + bookId);
+        }
+        bookRepository.deleteById(bookId);
     }
 
     @Override
     public List<Book> getBooksByCategory(Long categoryId) {
-        return bookRepository.findByCategory_Id(categoryId);
+        return bookRepository.findByCategoryId(categoryId);
     }
-
-    @Override
-    public List<Book> getBooksByAuthor(Long authorId) {
-        return bookRepository.findByAuthors_Id(authorId);
-    }
-
-    @Override
-    public List<Book> searchBooks(String keyword) {
-        return bookRepository.findByTitleContainingIgnoreCaseOrDescriptionContainingIgnoreCase(keyword, keyword);
-    }
-
 }

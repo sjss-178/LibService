@@ -91,4 +91,9 @@ public class BookLoanServiceImpl implements BookLoanService {
                 LocalDateTime.now(), LoanStatus.RETURNED
         );
     }
+
+    @Override
+    public List<BookLoan> getAllLoans() {
+        return bookLoanRepository.findAll();
+    }
 }

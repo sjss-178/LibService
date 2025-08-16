@@ -33,7 +33,7 @@ public interface BookRepository extends JpaRepository<Book, Long> {
 
     // Find active books
     List<Book> findByActiveTrue();
-
+    List<Book> findByCategoryId(Long categoryId);
     // Find books with low stock
     @Query("SELECT b FROM Book b WHERE b.availableCopies <= :threshold AND b.active = true")
     List<Book> findBooksWithLowStock(@Param("threshold") Integer threshold);

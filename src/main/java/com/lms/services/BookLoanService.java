@@ -9,4 +9,5 @@ public interface BookLoanService {
     BookLoan returnBook(Long loanId);
     List<BookLoan> getLoansByMember(Long memberId);
     List<BookLoan> getOverdueLoans();
+    List<BookLoan> getAllLoans();
 }
